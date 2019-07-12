@@ -38,7 +38,8 @@
                                     <p>销量{{pro.totalSold}}</p>
                                     <div class="price">
                                         <span>￥{{pro.minPrice}}</span>
-                                        <carControl :id="pro.id" :showMinus="false"/>
+                                        <!-- <carControl :id="pro.id" :showMinus="false"/> -->
+                                        <i class="iconfont icon-tianjia" @click.stop="increaseCount(pro.id)"></i>
                                     </div>
                                 </section>
                             </li>
@@ -58,7 +59,7 @@ import searchBar from '@/components/searchBar/searchBar.vue'
 import productPopup from '@/components/productPopup/productPopup.vue'
 import BScroll from 'better-scroll'
 import { Header } from 'mint-ui'
-import {mapActions, mapState} from 'vuex'
+import {mapActions, mapState, mapMutations} from 'vuex'
 export default {
   name: 'category',
   components:{carControl,searchBar,productPopup},
@@ -79,6 +80,9 @@ export default {
           'currentList',
           'currentId'
       ]),
+       ...mapState('cart',[
+          'skuSetting'
+      ]),
       currentIndex() {
           for(var i = 0; i<this.listHeight.length;i++) {
               let height1 = this.listHeight[i]
@@ -97,9 +101,15 @@ export default {
   },
   methods: {
     //   初始化滚动区域
+    ...mapMutations('cart',[
+          'openCartDrawer',
+          'saveSkuSetting',
+          'changeSkuSetting'
+      ]),
     ...mapActions('category',[
         'fetchCategories',
-        'fetchProductById'
+        'fetchProductById',
+        'fetchProductDetail'
     ]),
     initScroll() {
         this.menuScroll = new BScroll(this.$refs.menuScroll,{
@@ -117,10 +127,6 @@ export default {
     },
     selectMenu(index) {
         this.fetchProductById({productCategoryId: index})
-    //     let list = this.$refs.listScroll.getElementsByClassName('list-hook')
-    // //   console.log(list)
-    //     let el = list[index]
-    //     this.listScroll.scrollToElement(el,300)
     },
     calculateHeight() {
         let prolist = this.$refs.listScroll.getElementsByClassName('list-hook')
@@ -134,7 +140,14 @@ export default {
     },
     toDetail(id){
         this.$router.push({name: 'detail', params:{productId: id}})
-    }
+    },
+     increaseCount(id) {
+         this.$nextTick(() => {
+            this.openCartDrawer()
+            this.fetchProductDetail({productId: id})
+         })
+       
+    },
   }
 }
 </script>

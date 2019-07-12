@@ -44,12 +44,21 @@ export default {
             'fetchProductDetail'
         ]),
       increaseCount() {
-          this.openCartDrawer()
+          
           let {number: prevNum} = this.skuSetting
-          if(prevNum <= 1) {
-
+          if(prevNum >= this.skuItem.remainder) {
+            Toast({
+              message: '没有更多啦',
+              position: 'top',
+              duration: 2000
+            })
+            return
           }
-          this.fetchProductDetail({productId:this.id})
+          this.$nextTick(() => {
+           this.changeSkuSetting({number:prevNum + 1})
+           this.openCartDrawer()
+          })
+          
       },
       decreaseCount () {
           // this.food.count--
@@ -57,9 +66,10 @@ export default {
           if(prevNum <= 1) {
             Toast({
               message: '不能再减啦',
-              position: 'center',
+              position: 'top',
               duration: 2000
             })
+            return
           }
           this.changeSkuSetting({number:prevNum - 1})
       }

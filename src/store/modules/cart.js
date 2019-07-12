@@ -2,7 +2,7 @@ import { getCartList, saveCartList, removeCartList } from '@/untils/localStorage
 import _ from 'lodash'
 const state ={  
     cartList: [], // 购物车数据
-    openCartDrawer: false,
+    openCartDrawers: false,
     skuSetting: {
       product: null,
       type: null,
@@ -58,10 +58,10 @@ const mutations = {
     state.cartList = cartList
   },
   openCartDrawer (state) {
-    state.openCartDrawer = true
+    state.openCartDrawers = true
   },
   closeCartDrawer (state) {
-    state.openCartDrawer = false
+    state.openCartDrawers = false
   },
   saveSkuSetting(state, payload) {
     // state.skuSetting = 

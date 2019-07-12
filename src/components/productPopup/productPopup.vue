@@ -1,6 +1,7 @@
 <template>
      <mt-popup
-        v-model="openCartDrawer"
+        v-model="openCartDrawers"
+        v-if="openCartDrawers"
         :closeOnClickModal="false"
         position="bottom">
             <section v-if="productDetail">
@@ -15,13 +16,13 @@
                 <div class="specification">
                         <p class="title">规格</p>
                         <ul class="content1">
-                            <li v-for="(d,index) in productDetail.productInventoryList" :key="index" @click="selectItem(index)" :class="{'active':index==selectIndex}">{{d.specification}}</li>
+                            <li v-for="(d,index) in productDetail.productInventoryList" :key="index" @click="selectItem(index,d.id)" :class="{'active':index==selectIndex}">{{d.specification}}</li>
                         </ul>
                     </div>
                     <div class="number">
                         <p class="title">数量</p>
                         <p class="content">
-                            <span>库存 {{skuItem.remainder?skuItem.remainder:null}}件</span>
+                            <span v-if="skuItem.remainder">库存 {{skuItem.remainder?skuItem.remainder:0}}件</span>
                             <carControl  :showMinus="true"/>
                         </p>
                     </div>
@@ -38,9 +39,14 @@ export default {
     components: {
         carControl
     },
+    data() {
+        return {
+            skuid: null
+        }
+    },
     computed: {
         ...mapState('cart',[
-            'openCartDrawer',
+            'openCartDrawers',
             'skuSetting'
         ]),
          ...mapState('category', [
@@ -52,28 +58,31 @@ export default {
     },
     data() {
         return {
-            // detail:{
-            //     title: '禾健生乳钙 青少年儿童补钙粉 儿童钙 成年人钙 孕妇钙 中老年钙',
-            //     // title: '禾健生乳钙青少年儿童补钙粉儿童钙成年人钙孕妇钙中老年钙',
-            //     price: '288',
-            //     seal_amount: 99,
-            //     warehouse_place: '浙江湖州',
-            //     delivery_price: 10.0,
-            //     guarantee: '禾健生自营 品质保证禾健生自营 品质保证禾健生自营 品质保证禾健生自营 品质保证禾健生自营 品质保证',
-            //     specification:["250g/盒","500g/盒"]
-            // },
             selectIndex: 0
         }
     },
     methods:{
         ...mapMutations('cart',[
-            'closeCartDrawer'
+            'closeCartDrawer',
+            'changeSkuSetting'
         ]),
-        selectItem(index) {
+         ...mapMutations('category',[
+            'updateProductDetailSkuId'
+        ]),
+        selectItem(index,id) {
             this.selectIndex = index
+            let prevselect = this.selectIndex
+            if(this.index === prevselect) {
+                return
+            }
+            this.changeSkuSetting({skuId: id, number: 1})
         },
         closeCartD () {
             this.closeCartDrawer()
+            this.updateSkuId()
+        },
+        updateSkuId() {
+            this.updateProductDetailSkuId({skuId: this.skuSetting.skuId})
         }
     }
 }

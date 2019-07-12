@@ -89,6 +89,12 @@ const mutations ={
     },
     saveProductDetail(state, {productDetail}) {
         state.productDetail = productDetail
+    },
+    updateProductDetailSkuId(state, payload) {
+        state.productDetail ={
+            ...state.productDetail,
+            ...payload
+        }
     }
 }
  export default {
